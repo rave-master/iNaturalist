@@ -1,0 +1,55 @@
+<div id="inat-gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;padding:10px;font-family:sans-serif;">
+    Loading iNaturalist gallery...
+</div>
+
+<script>
+// User settings
+const userId = "junery_ren2";
+const perPage = 200; // Max per API call
+
+async function fetchObservations(page = 1) {
+    const url = `https://api.inaturalist.org/v1/observations?user_id=${userId}&place_id=any&verifiable=any&per_page=${perPage}&page=${page}&order=desc&order_by=observed_on`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.results;
+}
+
+async function loadGallery() {
+    let allObservations = [];
+    let page = 1;
+    let results;
+
+    // Fetch multiple pages until no more results
+    do {
+        results = await fetchObservations(page);
+        allObservations = allObservations.concat(results);
+        page++;
+    } while (results.length > 0);
+
+    const gallery = document.getElementById("inat-gallery");
+    gallery.innerHTML = ""; // Clear loading text
+
+    allObservations.forEach(obs => {
+        const imgUrl = obs.photos[0]?.url.replace("square", "medium") || "";
+        const speciesName = obs.species_guess || "Unknown species";
+        const obsLink = `https://www.inaturalist.org/observations/${obs.id}`;
+
+        if (imgUrl) {
+            const item = document.createElement("div");
+            item.style.border = "1px solid #ccc";
+            item.style.borderRadius = "8px";
+            item.style.overflow = "hidden";
+            item.style.background = "#fff";
+            item.innerHTML = `
+                <a href="${obsLink}" target="_blank" style="text-decoration:none;color:black;">
+                    <img src="${imgUrl}" alt="${speciesName}" style="width:100%;display:block;">
+                    <div style="padding:5px;font-size:14px;text-align:center;">${speciesName}</div>
+                </a>
+            `;
+            gallery.appendChild(item);
+        }
+    });
+}
+
+loadGallery();
+</script>

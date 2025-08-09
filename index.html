@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive iNaturalist Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .observation-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .observation-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .search-input {
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://ia601007.us.archive.org/3/items/mt.-apo/Mt.%20APO.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .observation-image {
+            transition: transform 0.3s ease;
+        }
+        
+        .observation-card:hover .observation-image {
+            transform: scale(1.1);
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Hero Section -->
+    <div class="hero-gradient text-white py-16 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-5xl font-bold mb-4">RaveMaster Nature Gallery</h1>
+            <p class="text-xl opacity-90 mb-8">Discover My amazing wildlife observations from iNaturalist</p>
+            <div class="flex justify-center space-x-8 text-center">
+                <div class="stats-card rounded-lg p-4 bg-white bg-opacity-20">
+                    <div class="text-2xl font-bold" id="total-count">0</div>
+                    <div class="text-sm opacity-80">Observations</div>
+                </div>
+                <div class="stats-card rounded-lg p-4 bg-white bg-opacity-20">
+                    <div class="text-2xl font-bold" id="species-count">0</div>
+                    <div class="text-sm opacity-80">Species</div>
+                </div>
+                <div class="stats-card rounded-lg p-4 bg-white bg-opacity-20">
+                    <div class="text-2xl font-bold" id="filtered-count">0</div>
+                    <div class="text-sm opacity-80">Showing</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="🔍 Search species, locations, or descriptions..."
+                        class="search-input w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    >
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="filter-btn bg-blue-500 text-white px-6 py-3 rounded-full font-medium shadow-md hover:bg-blue-600 active" data-filter="all">
+                    🌍 All Species
+                </button>
+                <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-medium shadow-md hover:bg-gray-300" data-filter="plants">
+                    🌱 Plants
+                </button>
+                <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-medium shadow-md hover:bg-gray-300" data-filter="birds">
+                    🐦 Birds
+                </button>
+                <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-medium shadow-md hover:bg-gray-300" data-filter="insects">
+                    🦋 Insects
+                </button>
+                <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-medium shadow-md hover:bg-gray-300" data-filter="mammals">
+                    🐾 Mammals
+                </button>
+                <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-medium shadow-md hover:bg-gray-300" data-filter="recent">
+                    ⏰ Recent
+                </button>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="flex items-center space-x-4">
+                <label class="text-gray-700 font-medium">Sort by:</label>
+                <select id="sort-select" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    <option value="date">📅 Date Observed</option>
+                    <option value="species">🔤 Species Name</option>
+                    <option value="quality">⭐ Quality Grade</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="text-center py-16">
+        <div class="loading-spinner w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full mx-auto mb-4"></div>
+        <p class="text-xl text-gray-600">Loading amazing nature observations...</p>
+    </div>
+
+    <!-- Floating Profile Card -->
+    <div id="floating-profile" class="fixed bottom-6 right-6 z-40">
+        <div class="flex items-center space-x-3 bg-white bg-opacity-90 backdrop-blur-md rounded-xl p-3 border border-gray-200 shadow-lg transform transition-all duration-300 hover:scale-105">
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
+                <img id="floating-profile-photo" src="https://static.inaturalist.org/attachments/users/icons/1513513/medium.jpg?1565936180" alt="Profile" class="w-full h-full object-cover bg-gray-100">
+            </div>
+            <div>
+                <h3 id="floating-profile-name" class="font-medium text-gray-700 text-sm">junery_ren2</h3>
+                <p class="text-xs text-gray-600">iNaturalist Explorer</p>
+                <div class="flex justify-between text-xs text-gray-600 mt-1 space-x-4">
+                    <span>🌿 <span id="profile-obs-count" class="font-medium">0</span></span>
+                    <span>🔬 <span id="profile-species-count" class="font-medium">0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="max-w-7xl mx-auto px-4 pb-16">
+        <div id="inat-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- About Section -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">RaveMaster Nature Gallery</h3>
+                    <p class="text-gray-400 text-sm mb-4">Exploring and documenting the natural world through photography and scientific observation.</p>
+                    <p class="text-gray-400 text-sm">Powered by iNaturalist</p>
+                </div>
+                
+                <!-- Contact Information -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Information</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center text-gray-300">
+                            <span class="mr-3">📧</span>
+                            <a href="mailto:info@rave-master.de" class="hover:text-blue-400 transition-colors">info@rave-master.de</a>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <span class="mr-3">📱</span>
+                            <a href="tel:09092534256" class="hover:text-blue-400 transition-colors">09092534256</a>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <span class="mr-3">📞</span>
+                            <a href="tel:(084) 216-1886" class="hover:text-blue-400 transition-colors">(084) 216-1886</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect With Me</h4>
+                    <div class="space-y-3">
+                        <a href="https://www.facebook.com/junery.ren" target="_blank" class="flex items-center text-gray-300 hover:text-blue-400 transition-colors text-sm">
+                            <span class="mr-3">📘</span>
+                            Facebook Profile
+                        </a>
+                        <a href="https://www.inaturalist.org/people/junery_ren2" target="_blank" class="flex items-center text-gray-300 hover:text-green-400 transition-colors text-sm">
+                            <span class="mr-3">🔬</span>
+                            iNaturalist Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-6 text-center">
+                <p class="text-gray-400 text-sm mb-2">
+                    © 2024 RaveMaster Nature Gallery™. All rights reserved. | 
+                    <span class="text-gray-500">Built with passion for nature conservation</span>
+                </p>
+                <p class="text-gray-500 text-xs">
+                    This gallery showcases biodiversity observations contributed to the global scientific community through iNaturalist.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Full Screen Image Modal -->
+    <div id="fullscreen-modal" class="fixed inset-0 z-60 hidden bg-black bg-opacity-95 flex items-center justify-center">
+        <button id="close-fullscreen" class="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 z-70">&times;</button>
+        <img id="fullscreen-image" class="max-w-full max-h-full object-contain" alt="">
+    </div>
+
+    <!-- Modal for detailed view -->
+    <div id="observation-modal" class="fixed inset-0 z-50 hidden modal-backdrop">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-bold text-gray-800" id="modal-species"></h3>
+                        <button id="close-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                    </div>
+                    
+                    <!-- Photo carousel container -->
+                    <div class="relative mb-4">
+                        <img id="modal-image" class="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity" alt="" title="Click to view full size">
+                        
+                        <!-- Navigation arrows -->
+                        <button id="prev-photo" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all opacity-0 pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <button id="next-photo" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-opacity-70 transition-all opacity-0 pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Photo counter -->
+                        <div id="photo-counter" class="absolute bottom-3 right-3 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm opacity-0">
+                            1 / 1
+                        </div>
+                    </div>
+                    
+                    <!-- Photo thumbnails -->
+                    <div id="photo-thumbnails" class="flex space-x-2 mb-4 overflow-x-auto pb-2 hidden">
+                    </div>
+                    
+                    <!-- Location Map -->
+                    <div id="location-map-container" class="mb-4 hidden">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-2">📍 Observation Location</h4>
+                        <div id="location-map" class="w-full h-48 rounded-lg border-2 border-gray-200 bg-gray-100"></div>
+                        <div id="coordinates-info" class="text-sm text-gray-600 mt-2"></div>
+                    </div>
+                    
+                    <div id="modal-details" class="space-y-3 text-gray-600">
+                    </div>
+                    <div class="mt-6 flex space-x-4">
+                        <a id="modal-link" href="#" target="_blank" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                            View on iNaturalist
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User settings
+        const userId = "junery_ren2";
+        const perPage = 200;
+        
+        let allObservations = [];
+        let filteredObservations = [];
+        let currentFilter = 'all';
+        let currentSort = 'date';
+
+        // Fetch observations from iNaturalist API
+        async function fetchObservations(page = 1) {
+            const url = `https://api.inaturalist.org/v1/observations?user_id=${userId}&place_id=any&verifiable=any&per_page=${perPage}&page=${page}&order=desc&order_by=observed_on`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.results;
+        }
+
+        // Fetch user profile data
+        async function fetchUserProfile() {
+            try {
+                const url = `https://api.inaturalist.org/v1/users/${userId}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.results[0];
+            } catch (error) {
+                console.log('Could not fetch user profile');
+                return null;
+            }
+        }
+
+        // Load all observations
+        async function loadGallery() {
+            // Load user profile first
+            const userProfile = await fetchUserProfile();
+            if (userProfile && userProfile.icon_url) {
+                document.getElementById('floating-profile-photo').src = userProfile.icon_url;
+                if (userProfile.name) {
+                    document.getElementById('floating-profile-name').textContent = userProfile.name;
+                }
+            }
+
+            let page = 1;
+            let results;
+
+            do {
+                results = await fetchObservations(page);
+                allObservations = allObservations.concat(results);
+                page++;
+            } while (results.length > 0);
+
+            filteredObservations = [...allObservations];
+            updateStats();
+            renderGallery();
+            document.getElementById('loading-state').style.display = 'none';
+        }
+
+        // Update statistics
+        function updateStats() {
+            const uniqueSpecies = new Set(allObservations.map(obs => obs.species_guess || 'Unknown')).size;
+            document.getElementById('total-count').textContent = allObservations.length;
+            document.getElementById('species-count').textContent = uniqueSpecies;
+            document.getElementById('filtered-count').textContent = filteredObservations.length;
+            
+            // Update profile card stats
+            document.getElementById('profile-obs-count').textContent = allObservations.length;
+            document.getElementById('profile-species-count').textContent = uniqueSpecies;
+        }
+
+        // Render gallery
+        function renderGallery() {
+            const gallery = document.getElementById("inat-gallery");
+            gallery.innerHTML = "";
+
+            filteredObservations.forEach((obs, index) => {
+                const imgUrl = obs.photos[0]?.url.replace("square", "medium") || "";
+                const speciesName = obs.species_guess || "Unknown species";
+                const obsLink = `https://www.inaturalist.org/observations/${obs.id}`;
+                const observedDate = new Date(obs.observed_on).toLocaleDateString();
+                const qualityGrade = obs.quality_grade || 'casual';
+
+                if (imgUrl) {
+                    const item = document.createElement("div");
+                    item.className = "observation-card bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer";
+                    item.style.animationDelay = `${index * 0.05}s`;
+                    
+                    item.innerHTML = `
+                        <div class="relative overflow-hidden">
+                            <img src="${imgUrl}" alt="${speciesName}" class="observation-image w-full h-48 object-cover">
+                            <div class="absolute top-3 right-3">
+                                <span class="bg-white bg-opacity-90 text-xs px-2 py-1 rounded-full font-medium ${qualityGrade === 'research' ? 'text-green-600' : qualityGrade === 'needs_id' ? 'text-yellow-600' : 'text-gray-600'}">
+                                    ${qualityGrade === 'research' ? '✓ Research' : qualityGrade === 'needs_id' ? '? Needs ID' : '○ Casual'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">${speciesName}</h3>
+                            <div class="text-sm text-gray-500 space-y-1">
+                                <div class="flex items-center">
+                                    <span class="mr-2">📅</span>
+                                    <span>${observedDate}</span>
+                                </div>
+                                ${obs.place_guess ? `
+                                <div class="flex items-center">
+                                    <span class="mr-2">📍</span>
+                                    <span class="truncate">${obs.place_guess}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => openModal(obs));
+                    gallery.appendChild(item);
+                }
+            });
+        }
+
+        // Global variables for photo navigation
+        let currentObservation = null;
+        let currentPhotoIndex = 0;
+
+        // Open modal with observation details
+        function openModal(obs) {
+            currentObservation = obs;
+            currentPhotoIndex = 0;
+            
+            const modal = document.getElementById('observation-modal');
+            const speciesName = obs.species_guess || "Unknown species";
+            const obsLink = `https://www.inaturalist.org/observations/${obs.id}`;
+            
+            document.getElementById('modal-species').textContent = speciesName;
+            document.getElementById('modal-link').href = obsLink;
+            
+            // Setup photo carousel
+            setupPhotoCarousel(obs);
+            
+            const details = document.getElementById('modal-details');
+            details.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <strong>📅 Observed:</strong><br>
+                        ${new Date(obs.observed_on).toLocaleDateString()}
+                    </div>
+                    <div>
+                        <strong>⭐ Quality:</strong><br>
+                        ${obs.quality_grade || 'casual'}
+                    </div>
+                    ${obs.place_guess ? `
+                    <div class="col-span-2">
+                        <strong>📍 Location:</strong><br>
+                        ${obs.place_guess}
+                    </div>
+                    ` : ''}
+                    ${obs.description ? `
+                    <div class="col-span-2">
+                        <strong>📝 Description:</strong><br>
+                        ${obs.description}
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Setup photo carousel
+        function setupPhotoCarousel(obs) {
+            const photos = obs.photos || [];
+            const modalImage = document.getElementById('modal-image');
+            const prevBtn = document.getElementById('prev-photo');
+            const nextBtn = document.getElementById('next-photo');
+            const counter = document.getElementById('photo-counter');
+            const thumbnails = document.getElementById('photo-thumbnails');
+            
+            if (photos.length > 1) {
+                // Show navigation controls
+                prevBtn.classList.remove('opacity-0', 'pointer-events-none');
+                nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+                counter.classList.remove('opacity-0');
+                thumbnails.classList.remove('hidden');
+                
+                // Create thumbnails
+                thumbnails.innerHTML = '';
+                photos.forEach((photo, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = photo.url.replace('square', 'small');
+                    thumb.className = `w-16 h-16 object-cover rounded-lg cursor-pointer border-2 transition-all ${index === 0 ? 'border-blue-500' : 'border-gray-200 hover:border-gray-400'}`;
+                    thumb.addEventListener('click', () => showPhoto(index));
+                    thumbnails.appendChild(thumb);
+                });
+            } else {
+                // Hide navigation controls
+                prevBtn.classList.add('opacity-0', 'pointer-events-none');
+                nextBtn.classList.add('opacity-0', 'pointer-events-none');
+                counter.classList.add('opacity-0');
+                thumbnails.classList.add('hidden');
+            }
+            
+            // Setup location map
+            setupLocationMap(obs);
+            
+            // Show first photo
+            showPhoto(0);
+        }
+
+        // Setup location map
+        function setupLocationMap(obs) {
+            const mapContainer = document.getElementById('location-map-container');
+            const mapDiv = document.getElementById('location-map');
+            const coordsInfo = document.getElementById('coordinates-info');
+            
+            if (obs.location && obs.location.split(',').length === 2) {
+                const [lat, lng] = obs.location.split(',').map(coord => parseFloat(coord.trim()));
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    mapContainer.classList.remove('hidden');
+                    
+                    // Create a simple map using OpenStreetMap tiles
+                    const zoom = 13;
+                    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
+                    
+                    mapDiv.innerHTML = `
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            scrolling="no" 
+                            marginheight="0" 
+                            marginwidth="0" 
+                            src="${mapUrl}"
+                            class="rounded-lg">
+                        </iframe>
+                    `;
+                    
+                    // Show coordinates and accuracy
+                    let coordsText = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    if (obs.positional_accuracy) {
+                        coordsText += ` (±${obs.positional_accuracy}m accuracy)`;
+                    }
+                    coordsInfo.textContent = coordsText;
+                } else {
+                    mapContainer.classList.add('hidden');
+                }
+            } else {
+                mapContainer.classList.add('hidden');
+            }
+        }
+
+        // Show specific photo
+        function showPhoto(index) {
+            if (!currentObservation || !currentObservation.photos) return;
+            
+            const photos = currentObservation.photos;
+            if (index < 0 || index >= photos.length) return;
+            
+            currentPhotoIndex = index;
+            const modalImage = document.getElementById('modal-image');
+            const counter = document.getElementById('photo-counter');
+            
+            // Update main image
+            modalImage.src = photos[index].url.replace('square', 'large');
+            
+            // Add click event for fullscreen view
+            modalImage.onclick = () => openFullscreen(photos[index].url.replace('square', 'original'));
+            
+            // Update counter
+            counter.textContent = `${index + 1} / ${photos.length}`;
+            
+            // Update thumbnail selection
+            const thumbnails = document.querySelectorAll('#photo-thumbnails img');
+            thumbnails.forEach((thumb, i) => {
+                if (i === index) {
+                    thumb.classList.remove('border-gray-200');
+                    thumb.classList.add('border-blue-500');
+                } else {
+                    thumb.classList.remove('border-blue-500');
+                    thumb.classList.add('border-gray-200');
+                }
+            });
+        }
+
+        // Open fullscreen image view
+        function openFullscreen(imageUrl) {
+            const fullscreenModal = document.getElementById('fullscreen-modal');
+            const fullscreenImage = document.getElementById('fullscreen-image');
+            
+            fullscreenImage.src = imageUrl;
+            fullscreenModal.classList.remove('hidden');
+        }
+
+        // Close fullscreen image view
+        function closeFullscreen() {
+            document.getElementById('fullscreen-modal').classList.add('hidden');
+        }
+
+        // Navigate to previous photo
+        function prevPhoto() {
+            if (currentPhotoIndex > 0) {
+                showPhoto(currentPhotoIndex - 1);
+            }
+        }
+
+        // Navigate to next photo
+        function nextPhoto() {
+            if (currentObservation && currentObservation.photos && currentPhotoIndex < currentObservation.photos.length - 1) {
+                showPhoto(currentPhotoIndex + 1);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('observation-modal').classList.add('hidden');
+        }
+
+        // Filter observations
+        function filterObservations() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            filteredObservations = allObservations.filter(obs => {
+                const matchesSearch = !searchTerm || 
+                    (obs.species_guess && obs.species_guess.toLowerCase().includes(searchTerm)) ||
+                    (obs.place_guess && obs.place_guess.toLowerCase().includes(searchTerm)) ||
+                    (obs.description && obs.description.toLowerCase().includes(searchTerm));
+                
+                let matchesFilter = false;
+                
+                if (currentFilter === 'all') {
+                    matchesFilter = true;
+                } else if (currentFilter === 'plants') {
+                    // Check for plant-related taxonomic information
+                    matchesFilter = (obs.taxon && (
+                        (obs.taxon.iconic_taxon_name && obs.taxon.iconic_taxon_name.toLowerCase() === 'plantae') ||
+                        (obs.taxon.name && obs.taxon.name.toLowerCase().includes('plant')) ||
+                        (obs.taxon.ancestry && obs.taxon.ancestry.includes('47126')) || // Plantae kingdom ID
+                        (obs.species_guess && (
+                            obs.species_guess.toLowerCase().includes('tree') ||
+                            obs.species_guess.toLowerCase().includes('flower') ||
+                            obs.species_guess.toLowerCase().includes('grass') ||
+                            obs.species_guess.toLowerCase().includes('fern') ||
+                            obs.species_guess.toLowerCase().includes('moss')
+                        ))
+                    ));
+                } else if (currentFilter === 'birds') {
+                    // Check for bird-related taxonomic information, excluding insects
+                    matchesFilter = (obs.taxon && (
+                        (obs.taxon.iconic_taxon_name && obs.taxon.iconic_taxon_name.toLowerCase() === 'aves') ||
+                        (obs.taxon.name && obs.taxon.name.toLowerCase().includes('aves')) ||
+                        (obs.taxon.ancestry && obs.taxon.ancestry.includes('3')) || // Aves class ID
+                        (obs.species_guess && obs.species_guess.toLowerCase().includes('bird'))
+                    ) && !(obs.taxon.iconic_taxon_name && obs.taxon.iconic_taxon_name.toLowerCase() === 'insecta') &&
+                    !(obs.taxon.ancestry && obs.taxon.ancestry.includes('47158')));
+                } else if (currentFilter === 'insects') {
+                    // Check for insect-related taxonomic information
+                    matchesFilter = (obs.taxon && (
+                        (obs.taxon.iconic_taxon_name && obs.taxon.iconic_taxon_name.toLowerCase() === 'insecta') ||
+                        (obs.taxon.name && obs.taxon.name.toLowerCase().includes('insect')) ||
+                        (obs.taxon.ancestry && obs.taxon.ancestry.includes('47158')) || // Insecta class ID
+                        (obs.species_guess && (
+                            obs.species_guess.toLowerCase().includes('butterfly') ||
+                            obs.species_guess.toLowerCase().includes('moth') ||
+                            obs.species_guess.toLowerCase().includes('bee') ||
+                            obs.species_guess.toLowerCase().includes('ant') ||
+                            obs.species_guess.toLowerCase().includes('beetle') ||
+                            obs.species_guess.toLowerCase().includes('fly')
+                        ))
+                    ));
+                } else if (currentFilter === 'mammals') {
+                    // Check for mammal-related taxonomic information
+                    matchesFilter = (obs.taxon && (
+                        (obs.taxon.iconic_taxon_name && obs.taxon.iconic_taxon_name.toLowerCase() === 'mammalia') ||
+                        (obs.taxon.name && obs.taxon.name.toLowerCase().includes('mammal')) ||
+                        (obs.taxon.ancestry && obs.taxon.ancestry.includes('40151')) || // Mammalia class ID
+                        (obs.species_guess && obs.species_guess.toLowerCase().includes('mammal'))
+                    ));
+                } else if (currentFilter === 'recent') {
+                    // Show observations from the last 30 days
+                    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                    matchesFilter = new Date(obs.observed_on) > thirtyDaysAgo;
+                }
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            sortObservations();
+            updateStats();
+            renderGallery();
+        }
+
+        // Sort observations
+        function sortObservations() {
+            filteredObservations.sort((a, b) => {
+                switch (currentSort) {
+                    case 'date':
+                        return new Date(b.observed_on) - new Date(a.observed_on);
+                    case 'species':
+                        return (a.species_guess || 'Unknown').localeCompare(b.species_guess || 'Unknown');
+                    case 'quality':
+                        const qualityOrder = { 'research': 3, 'needs_id': 2, 'casual': 1 };
+                        return (qualityOrder[b.quality_grade] || 0) - (qualityOrder[a.quality_grade] || 0);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', filterObservations);
+        document.getElementById('sort-select').addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            filterObservations();
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-blue-500', 'text-white', 'active');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                
+                e.target.classList.remove('bg-gray-200', 'text-gray-700');
+                e.target.classList.add('bg-blue-500', 'text-white', 'active');
+                
+                currentFilter = e.target.dataset.filter;
+                filterObservations();
+            });
+        });
+
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+        document.getElementById('observation-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        // Fullscreen modal event listeners
+        document.getElementById('close-fullscreen').addEventListener('click', closeFullscreen);
+        document.getElementById('fullscreen-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeFullscreen();
+        });
+
+        // Photo navigation event listeners
+        document.getElementById('prev-photo').addEventListener('click', prevPhoto);
+        document.getElementById('next-photo').addEventListener('click', nextPhoto);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Handle fullscreen modal
+            if (!document.getElementById('fullscreen-modal').classList.contains('hidden')) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeFullscreen();
+                }
+                return;
+            }
+            
+            // Handle observation modal
+            if (document.getElementById('observation-modal').classList.contains('hidden')) return;
+            
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevPhoto();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextPhoto();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeModal();
+            }
+        });
+
+        // Initialize
+        loadGallery();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c502f513f29b81',t:'MTc1NDcxOTAwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

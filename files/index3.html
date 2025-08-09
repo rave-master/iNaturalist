@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iNaturalist Gallery - Nature Photography Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gallery-item {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .gallery-item img {
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .floating-glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .floating-profile {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-profile.hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        
+        .filter-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .filter-dropdown.open {
+            max-height: 300px;
+        }
+        
+        .species-popup {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            max-width: 300px;
+            min-width: 250px;
+        }
+        
+        .species-popup.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <!-- Floating Profile Card -->
+    <div id="floating-profile" class="floating-profile hidden">
+        <div class="flex items-center space-x-3 floating-glass-effect rounded-xl p-3 border border-gray/20 shadow-lg">
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300">
+                <img id="floating-profile-photo" src="" alt="Profile" class="w-full h-full object-cover bg-gray-100">
+            </div>
+            <div>
+                <h3 id="floating-profile-name" class="font-medium text-gray-700 text-sm">junery_ren2</h3>
+                <p class="text-xs text-gray-600">iNaturalist Explorer</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative text-white py-16 px-4 overflow-hidden" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80') center/cover;">
+        <div class="max-w-6xl mx-auto relative">
+            <!-- Contact Info -->
+            <div class="absolute top-6 right-0 text-right glass-effect rounded-xl p-4 border border-white/20">
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center justify-end space-x-2">
+                        <span>📧</span>
+                        <a href="mailto:info@rave-master.de" class="hover:text-blue-200 transition-colors">info@rave-master.de</a>
+                    </div>
+                    <div class="flex items-center justify-end space-x-2">
+                        <span>📘</span>
+                        <a href="https://www.facebook.com/junery.ren" target="_blank" class="hover:text-blue-200 transition-colors">Facebook</a>
+                    </div>
+                    <div class="flex items-center justify-end space-x-2">
+                        <span>📞</span>
+                        <a href="tel:09092534256" class="hover:text-blue-200 transition-colors">09092534256</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Title (Centered) -->
+            <div class="text-center pt-8">
+                <h1 class="text-5xl font-bold mb-4">RaveMaster Nature Gallery</h1>
+                <p class="text-xl opacity-90 mb-2">Exploring biodiversity through iNaturalist</p>
+                <p class="text-lg opacity-75">Personal observation collection</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="bg-white shadow-sm border-b border-gray-100 py-4 px-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Filter Controls -->
+            <div class="relative">
+                <button id="filter-toggle" class="flex items-center space-x-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2 rounded-lg transition-colors">
+                    <span>🔍</span>
+                    <span class="font-medium">Filter</span>
+                    <span id="filter-count" class="bg-indigo-600 text-white text-xs px-2 py-1 rounded-full">All</span>
+                </button>
+                <div id="filter-dropdown" class="filter-dropdown absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 w-64 z-40">
+                    <div class="p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">Filter by Category</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="all" checked class="text-indigo-600">
+                                <span class="text-sm">🌍 All Observations</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="plants" class="text-indigo-600">
+                                <span class="text-sm">🌱 Plants</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="birds" class="text-indigo-600">
+                                <span class="text-sm">🐦 Birds</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="insects" class="text-indigo-600">
+                                <span class="text-sm">🦋 Insects</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="mammals" class="text-indigo-600">
+                                <span class="text-sm">🐾 Mammals</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="filter" value="fungi" class="text-indigo-600">
+                                <span class="text-sm">🍄 Fungi</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex items-center space-x-8">
+                <div class="text-center">
+                    <div id="total-count" class="text-2xl font-bold text-gray-800">0</div>
+                    <div class="text-sm text-gray-600">Observations</div>
+                </div>
+                <div class="text-center">
+                    <div id="loading-status" class="text-lg font-medium text-indigo-600">Loading...</div>
+                    <div class="text-sm text-gray-600">Status</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div id="inat-gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <!-- Loading State -->
+            <div class="col-span-full flex flex-col items-center justify-center py-20">
+                <div class="loading-spinner w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full mb-4"></div>
+                <p class="text-lg text-gray-600 mb-2">Loading your nature observations...</p>
+                <p class="text-sm text-gray-500">Fetching data from iNaturalist API</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Species Details Popup -->
+    <div id="species-popup" class="species-popup">
+        <div class="flex items-start space-x-3">
+            <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                <img id="popup-image" src="" alt="" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <h4 id="popup-title" class="font-semibold text-gray-800 text-sm mb-1"></h4>
+                <p id="popup-scientific" class="text-xs text-gray-500 italic mb-2"></p>
+                <div class="space-y-1">
+                    <div class="flex items-center text-xs text-gray-600">
+                        <span class="w-4">📅</span>
+                        <span id="popup-date"></span>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-600">
+                        <span class="w-4">📍</span>
+                        <span id="popup-location"></span>
+                    </div>
+                    <div class="flex items-center text-xs text-gray-600">
+                        <span class="w-4">🔬</span>
+                        <span id="popup-quality"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 px-4 mt-16">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-gray-300 mb-2">Powered by iNaturalist API</p>
+            <p class="text-sm text-gray-400">Celebrating the diversity of life on Earth 🌍</p>
+        </div>
+    </footer>
+
+    <script>
+        // User settings
+        const userId = "junery_ren2";
+        const perPage = 200; // Max per API call
+        let allObservations = [];
+        let currentFilter = 'all';
+        
+        // Species popup functionality
+        let currentPopupTimeout;
+        
+        function showSpeciesPopup(obs, event) {
+            clearTimeout(currentPopupTimeout);
+            
+            const popup = document.getElementById('species-popup');
+            const popupImage = document.getElementById('popup-image');
+            const popupTitle = document.getElementById('popup-title');
+            const popupScientific = document.getElementById('popup-scientific');
+            const popupDate = document.getElementById('popup-date');
+            const popupLocation = document.getElementById('popup-location');
+            const popupQuality = document.getElementById('popup-quality');
+            
+            // Populate popup content
+            const imgUrl = obs.photos[0]?.url.replace("square", "small") || "";
+            const speciesName = obs.species_guess || obs.taxon?.preferred_common_name || "Unknown species";
+            const scientificName = obs.taxon?.name || "";
+            const observedDate = new Date(obs.observed_on).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            const location = obs.place_guess || "Location not specified";
+            const quality = obs.quality_grade === 'research' ? 'Research Grade' : 
+                           obs.quality_grade === 'needs_id' ? 'Needs ID' : 'Casual';
+            
+            popupImage.src = imgUrl;
+            popupTitle.textContent = speciesName;
+            popupScientific.textContent = scientificName;
+            popupDate.textContent = observedDate;
+            popupLocation.textContent = location.length > 30 ? location.substring(0, 30) + '...' : location;
+            popupQuality.textContent = quality;
+            
+            // Position popup near cursor
+            const rect = event.target.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            
+            let left = event.clientX + 15;
+            let top = event.clientY - 10;
+            
+            // Adjust if popup would go off screen
+            if (left + 300 > window.innerWidth) {
+                left = event.clientX - 315;
+            }
+            if (top + 200 > window.innerHeight) {
+                top = event.clientY - 210;
+            }
+            
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+            popup.classList.add('visible');
+        }
+        
+        function hideSpeciesPopup() {
+            currentPopupTimeout = setTimeout(() => {
+                const popup = document.getElementById('species-popup');
+                popup.classList.remove('visible');
+            }, 100);
+        }
+
+        // Floating profile scroll handler
+        window.addEventListener('scroll', () => {
+            const floatingProfile = document.getElementById('floating-profile');
+            const header = document.querySelector('header');
+            const headerBottom = header.offsetTop + header.offsetHeight;
+            
+            if (window.scrollY > headerBottom) {
+                floatingProfile.classList.remove('hidden');
+            } else {
+                floatingProfile.classList.add('hidden');
+            }
+        });
+
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterToggle = document.getElementById('filter-toggle');
+            const filterDropdown = document.getElementById('filter-dropdown');
+            const filterInputs = document.querySelectorAll('input[name="filter"]');
+
+            filterToggle.addEventListener('click', () => {
+                filterDropdown.classList.toggle('open');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!filterToggle.contains(e.target) && !filterDropdown.contains(e.target)) {
+                    filterDropdown.classList.remove('open');
+                }
+            });
+
+            // Handle filter changes
+            filterInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    currentFilter = input.value;
+                    applyFilter();
+                    filterDropdown.classList.remove('open');
+                });
+            });
+        });
+
+        function categorizeObservation(obs) {
+            const taxon = obs.taxon;
+            if (!taxon) return 'other';
+            
+            const iconicTaxonName = taxon.iconic_taxon_name?.toLowerCase();
+            const name = (obs.species_guess || taxon.preferred_common_name || taxon.name || '').toLowerCase();
+            
+            if (iconicTaxonName === 'plantae' || name.includes('plant') || name.includes('tree') || name.includes('flower')) {
+                return 'plants';
+            } else if (iconicTaxonName === 'aves' || name.includes('bird')) {
+                return 'birds';
+            } else if (iconicTaxonName === 'insecta' || name.includes('butterfly') || name.includes('bee') || name.includes('ant')) {
+                return 'insects';
+            } else if (iconicTaxonName === 'mammalia' || name.includes('mammal') || name.includes('cat') || name.includes('dog')) {
+                return 'mammals';
+            } else if (iconicTaxonName === 'fungi' || name.includes('mushroom') || name.includes('fungus')) {
+                return 'fungi';
+            }
+            return 'other';
+        }
+
+        function applyFilter() {
+            const gallery = document.getElementById('inat-gallery');
+            const items = gallery.querySelectorAll('.gallery-item');
+            const filterCount = document.getElementById('filter-count');
+            let visibleCount = 0;
+
+            items.forEach((item, index) => {
+                const obs = allObservations[index];
+                const category = categorizeObservation(obs);
+                
+                if (currentFilter === 'all' || category === currentFilter) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Update filter count
+            const filterLabels = {
+                'all': 'All',
+                'plants': 'Plants',
+                'birds': 'Birds', 
+                'insects': 'Insects',
+                'mammals': 'Mammals',
+                'fungi': 'Fungi'
+            };
+            filterCount.textContent = `${filterLabels[currentFilter]} (${visibleCount})`;
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const url = `https://api.inaturalist.org/v1/users/${userId}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                const user = data.results[0];
+                
+                if (user) {
+                    // Update floating profile photo
+                    const floatingProfilePhoto = document.getElementById('floating-profile-photo');
+                    
+                    if (user.icon_url) {
+                        const photoUrl = user.icon_url.replace('thumb', 'medium');
+                        floatingProfilePhoto.src = photoUrl;
+                    } else {
+                        // Create a beautiful placeholder with initials
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 64;
+                        canvas.height = 64;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Gradient background
+                        const gradient = ctx.createLinearGradient(0, 0, 64, 64);
+                        gradient.addColorStop(0, '#667eea');
+                        gradient.addColorStop(1, '#764ba2');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, 64, 64);
+                        
+                        // Add initials
+                        ctx.fillStyle = 'white';
+                        ctx.font = 'bold 24px Inter';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        const initials = user.login.substring(0, 2).toUpperCase();
+                        ctx.fillText(initials, 32, 32);
+                        
+                        const dataUrl = canvas.toDataURL();
+                        floatingProfilePhoto.src = dataUrl;
+                    }
+                    
+                    // Update floating profile name
+                    const floatingProfileName = document.getElementById('floating-profile-name');
+                    const displayName = user.name || user.login;
+                    floatingProfileName.textContent = displayName;
+                }
+            } catch (error) {
+                console.log('Could not fetch user profile:', error);
+            }
+        }
+
+        async function fetchObservations(page = 1) {
+            const url = `https://api.inaturalist.org/v1/observations?user_id=${userId}&place_id=any&verifiable=any&per_page=${perPage}&page=${page}&order=desc&order_by=observed_on`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.results;
+        }
+
+        async function loadGallery() {
+            let page = 1;
+            let results;
+            
+            const gallery = document.getElementById("inat-gallery");
+            const totalCountEl = document.getElementById("total-count");
+            const loadingStatusEl = document.getElementById("loading-status");
+
+            // Fetch multiple pages until no more results
+            do {
+                loadingStatusEl.textContent = `Loading page ${page}...`;
+                results = await fetchObservations(page);
+                allObservations = allObservations.concat(results);
+                totalCountEl.textContent = allObservations.length;
+                page++;
+            } while (results.length > 0);
+
+            loadingStatusEl.textContent = "Complete!";
+            gallery.innerHTML = ""; // Clear loading state
+
+            if (allObservations.length === 0) {
+                gallery.innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No observations found</h3>
+                        <p class="text-gray-500">Check the username or try again later</p>
+                    </div>
+                `;
+                return;
+            }
+
+            allObservations.forEach((obs, index) => {
+                const imgUrl = obs.photos[0]?.url.replace("square", "medium") || "";
+                const speciesName = obs.species_guess || obs.taxon?.preferred_common_name || "Unknown species";
+                const scientificName = obs.taxon?.name || "";
+                const obsLink = `https://www.inaturalist.org/observations/${obs.id}`;
+                const observedDate = new Date(obs.observed_on).toLocaleDateString();
+
+                if (imgUrl) {
+                    const item = document.createElement("div");
+                    item.className = "gallery-item bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden fade-in";
+                    item.style.animationDelay = `${index * 0.05}s`;
+                    
+                    item.innerHTML = `
+                        <a href="${obsLink}" target="_blank" class="block group">
+                            <div class="aspect-square overflow-hidden bg-gray-100">
+                                <img src="${imgUrl}" 
+                                     alt="${speciesName}" 
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                     loading="lazy">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-800 text-sm mb-1 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                    ${speciesName}
+                                </h3>
+                                ${scientificName ? `<p class="text-xs text-gray-500 italic mb-2">${scientificName}</p>` : ''}
+                                <div class="flex items-center justify-between text-xs text-gray-400">
+                                    <span>📅 ${observedDate}</span>
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                                        View →
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    
+                    // Add hover event listeners for popup
+                    item.addEventListener('mouseenter', (e) => showSpeciesPopup(obs, e));
+                    item.addEventListener('mouseleave', hideSpeciesPopup);
+                    item.addEventListener('mousemove', (e) => {
+                        // Update popup position as mouse moves
+                        const popup = document.getElementById('species-popup');
+                        if (popup.classList.contains('visible')) {
+                            let left = e.clientX + 15;
+                            let top = e.clientY - 10;
+                            
+                            if (left + 300 > window.innerWidth) {
+                                left = e.clientX - 315;
+                            }
+                            if (top + 200 > window.innerHeight) {
+                                top = e.clientY - 210;
+                            }
+                            
+                            popup.style.left = left + 'px';
+                            popup.style.top = top + 'px';
+                        }
+                    });
+                    
+                    gallery.appendChild(item);
+                }
+            });
+
+            // Update final status
+            setTimeout(() => {
+                loadingStatusEl.innerHTML = '<span class="text-green-600 flex items-center space-x-1"><span>✅</span><span>Gallery loaded!</span></span>';
+            }, 1000);
+        }
+
+        // Initialize gallery and profile
+        Promise.all([
+            fetchUserProfile(),
+            loadGallery()
+        ]).catch(error => {
+            console.error('Error loading gallery:', error);
+            document.getElementById("inat-gallery").innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-semibold text-red-600 mb-2">Error loading observations</h3>
+                    <p class="text-gray-500">Please check your internet connection and try refreshing the page</p>
+                </div>
+            `;
+            document.getElementById("loading-status").textContent = "Error occurred";
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c45f84e375403a',t:'MTc1NDcxMjMwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
