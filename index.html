@@ -423,7 +423,7 @@
 
                 if (imgUrl) {
                     const item = document.createElement("div");
-                    item.className = "observation-card bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer";
+                    item.className = "observation-card bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer border-2 border-gray-200";
                     item.style.animationDelay = `${index * 0.05}s`;
                     
                     item.innerHTML = `
@@ -823,5 +823,34 @@
   };
 </script>
 
+<script>
+(function makeProfileDraggable() {
+    const profile = document.getElementById('floating-profile');
+    let isDragging = false, offsetX = 0, offsetY = 0;
+
+    profile.style.cursor = 'move';
+
+    profile.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        offsetX = e.clientX - profile.getBoundingClientRect().left;
+        offsetY = e.clientY - profile.getBoundingClientRect().top;
+        profile.style.transition = 'none';
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        profile.style.right = 'auto';
+        profile.style.bottom = 'auto';
+        profile.style.left = (e.clientX - offsetX) + 'px';
+        profile.style.top = (e.clientY - offsetY) + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        document.body.style.userSelect = '';
+    });
+})();
+</script>
 
 </html>
