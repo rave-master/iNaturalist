@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impressum - RaveMaster Nature Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .header .description {
+            font-size: 1rem;
+            color: #95a5a6;
+            font-style: italic;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .content-card h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .content-card h3 {
+            color: #34495e;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .content-card p {
+            margin-bottom: 18px;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .content-card ul {
+            margin: 15px 0 20px 25px;
+        }
+        
+        .content-card li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+        }
+        
+        .highlight-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .highlight-box p {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(253, 121, 168, 0.3);
+        }
+        
+        .warning-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box p {
+            color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .info-item {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-item h4 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-item p {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .contact-section {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(86, 171, 47, 0.3);
+        }
+        
+        .contact-section h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .contact-section p {
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 15px;
+        }
+        
+        .contact-email {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .contact-email:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 20px 10px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            color: #7f8c8d;
+        }
+        
+        .legal-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .address-block {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .address-block p {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .language-toggle {
+            margin-top: 25px;
+        }
+        
+        .lang-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.3rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .content-card {
+                padding: 25px;
+            }
+            
+            .content-card h2 {
+                font-size: 1.7rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>⚖️</span>
+                <span class="german-text">Impressum</span>
+                <span class="english-text" style="display: none;">Legal Notice</span>
+                <span>🇩🇪</span>
+            </h1>
+            <p class="subtitle">RaveMaster Nature Gallery</p>
+            <p class="description german-text">Angaben gemäß § 5 TMG (Telemediengesetz)</p>
+            <p class="description english-text" style="display: none;">Information according to § 5 TMG (German Telemedia Act)</p>
+            
+            <div class="language-toggle">
+                <button id="langToggle" class="lang-btn">
+                    🇬🇧 English Version
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2 class="german-text">📋 Angaben gemäß § 5 TMG</h2>
+            <h2 class="english-text" style="display: none;">📋 Information according to § 5 TMG</h2>
+            
+            <div class="address-block">
+                <p><strong>RaveMaster Nature Gallery</strong></p>
+                <p class="german-text">Inhaber: Junery M. Colada</p>
+                <p class="english-text" style="display: none;">Owner: Junery M. Colada</p>
+                <p>Tagum City, Davao del Norte</p>
+                <p>8100 Philippines</p>
+            </div>
+            
+            <div class="contact-section">
+                <h3 class="german-text">📞 Kontakt</h3>
+                <h3 class="english-text" style="display: none;">📞 Contact</h3>
+                <p class="german-text"><strong>E-Mail:</strong></p>
+                <p class="english-text" style="display: none;"><strong>Email:</strong></p>
+                <a href="mailto:info@rave-master.de" class="contact-email">
+                    📧 info@rave-master.de
+                </a>
+                
+                <p style="margin-top: 20px;"><strong>Mobile:</strong> +639092534256</p>
+                <p class="german-text"><strong>Telefon:</strong> (084) 216-1886</p>
+                <p class="english-text" style="display: none;"><strong>Phone:</strong> (084) 216-1886</p>
+                <p><strong>Website:</strong> rave-master.de</p>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2 class="german-text">👤 Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <h2 class="english-text" style="display: none;">👤 Responsible for Content according to § 55 Para. 2 RStV</h2>
+            
+            <div class="address-block">
+                <p><strong>Junery M. Colada</strong></p>
+                <p>Tagum City, Davao del Norte</p>
+                <p>8100 Philippines</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3 class="german-text">🎯 Zweck der Website</h3>
+                <h3 class="english-text" style="display: none;">🎯 Purpose of the Website</h3>
+                <p class="german-text">Diese Website dient der Präsentation von Wildtierfotografien zu Bildungs- und Naturschutzwecken. Alle Bilder stammen aus der iNaturalist-Datenbank und werden entsprechend den jeweiligen Lizenzen verwendet.</p>
+                <p class="english-text" style="display: none;">This website serves to present wildlife photography for educational and conservation purposes. All images are sourced from the iNaturalist database and are used according to their respective licenses.</p>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2 class="german-text">🇪🇺 EU-Streitschlichtung</h2>
+            <h2 class="english-text" style="display: none;">🇪🇺 EU Dispute Resolution</h2>
+            
+            <p class="legal-text german-text">Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:</p>
+            <p class="legal-text english-text" style="display: none;">The European Commission provides a platform for online dispute resolution (ODR):</p>
+            <p><strong>https://ec.europa.eu/consumers/odr/</strong></p>
+            
+            <p class="legal-text german-text">Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
+            <p class="legal-text english-text" style="display: none;">You can find our email address above in the legal notice.</p>
+            
+            <div class="warning-box">
+                <h3 class="german-text">⚠️ Verbraucherstreitbeilegung/Universalschlichtungsstelle</h3>
+                <h3 class="english-text" style="display: none;">⚠️ Consumer Dispute Resolution/Universal Arbitration Board</h3>
+                <p class="german-text">Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+                <p class="english-text" style="display: none;">We are not willing or obligated to participate in dispute resolution procedures before a consumer arbitration board.</p>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2>⚖️ Haftung für Inhalte</h2>
+            
+            <p class="legal-text">Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht unter der Verpflichtung, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+            
+            <p class="legal-text">Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>📝 Eigene Inhalte</h4>
+                    <p>Texte, Beschreibungen und Website-Struktur</p>
+                    <p>Sorgfältige Erstellung und regelmäßige Überprüfung</p>
+                </div>
+                
+                <div class="info-item">
+                    <h4>📸 Bildmaterial</h4>
+                    <p>Alle Fotos stammen aus iNaturalist</p>
+                    <p>Verwendung gemäß Creative Commons Lizenzen</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2>🔗 Haftung für Links</h2>
+            
+            <p class="legal-text">Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
+            
+            <p class="legal-text">Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar.</p>
+            
+            <div class="highlight-box">
+                <h3>🌐 Externe Links</h3>
+                <p><strong>iNaturalist.org:</strong> Wissenschaftliche Plattform für Naturbeobachtungen</p>
+                <p><strong>Andere externe Links:</strong> Werden bei Bekanntwerden von Rechtsverletzungen umgehend entfernt</p>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2>©️ Urheberrecht</h2>
+            
+            <p class="legal-text">Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+            
+            <h3>📸 Bildrechte und Lizenzen</h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>🌍 iNaturalist Bilder</h4>
+                    <p>Alle Wildtierfotos stammen von iNaturalist.org</p>
+                    <p>Verwendung unter Creative Commons Lizenzen</p>
+                    <p>Vollständige Namensnennung der Fotografen</p>
+                </div>
+                
+                <div class="info-item">
+                    <h4>⚖️ Lizenzkonformität</h4>
+                    <p>Strikte Einhaltung aller Lizenzbedingungen</p>
+                    <p>Verlinkung zu Originalbeobachtungen</p>
+                    <p>Respektierung der Fotografenrechte</p>
+                </div>
+                
+                <div class="info-item">
+                    <h4>📝 Website-Inhalte</h4>
+                    <p>Texte und Beschreibungen: © RaveMaster Nature Gallery</p>
+                    <p>Website-Design und -Struktur: Eigenentwicklung</p>
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ Urheberrechtsverletzungen</h3>
+                <p>Sollten Sie der Meinung sein, dass Ihre urheberrechtlich geschützten Werke ohne Ihre Einwilligung verwendet werden, kontaktieren Sie uns bitte umgehend. Wir werden entsprechende Inhalte sofort entfernen.</p>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2>🔒 Datenschutz</h2>
+            
+            <p class="legal-text">Der Schutz Ihrer persönlichen Daten ist uns wichtig. Detaillierte Informationen zum Umgang mit Ihren Daten finden Sie in unserer separaten Datenschutzerklärung.</p>
+            
+            <div class="highlight-box">
+                <h3>📋 DSGVO-Konformität</h3>
+                <p>Diese Website entspricht den Anforderungen der Datenschutz-Grundverordnung (DSGVO). Ausführliche Informationen finden Sie in unserer Datenschutzerklärung.</p>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>🍪 Cookies</h4>
+                    <p>Minimale Verwendung technisch notwendiger Cookies</p>
+                    <p>Keine Tracking- oder Werbe-Cookies</p>
+                </div>
+                
+                <div class="info-item">
+                    <h4>📊 Datensammlung</h4>
+                    <p>Keine Sammlung persönlicher Daten</p>
+                    <p>Anonyme Nutzungsstatistiken nur</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <h2>🌿 Über diese Website</h2>
+            
+            <p class="legal-text">RaveMaster Nature Gallery ist eine nicht-kommerzielle Bildungswebsite, die sich der Präsentation und dem Schutz der Wildtierfotografie widmet. Unser Ziel ist es, das Bewusstsein für die Biodiversität zu fördern und zur Citizen Science beizutragen.</p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>🎯 Mission</h4>
+                    <p>Förderung des Naturschutzbewusstseins</p>
+                    <p>Bildung über lokale Biodiversität</p>
+                    <p>Unterstützung der Citizen Science</p>
+                </div>
+                
+                <div class="info-item">
+                    <h4>🤝 Zusammenarbeit</h4>
+                    <p>Partnerschaft mit iNaturalist</p>
+                    <p>Respekt für Fotografenrechte</p>
+                    <p>Wissenschaftliche Genauigkeit</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>© 2024 RaveMaster Nature Gallery</strong></p>
+            <p class="german-text">Erstellt in Deutschland • Dem Naturschutz verpflichtet</p>
+            <p class="english-text" style="display: none;">Created in Germany • Committed to Nature Conservation</p>
+            <a href="/index.html" class="back-btn german-text">← Zurück zur Galerie</a>
+            <a href="/index.html" class="back-btn english-text" style="display: none;">← Back to Gallery</a>
+            <a href="/privacy" class="back-btn german-text">🔒 Datenschutzerklärung</a>
+            <a href="/privacy" class="back-btn english-text" style="display: none;">🔒 Privacy Policy</a>
+        </div>
+    </div>
+    
+    <script>
+        // Language toggle functionality
+        let isGerman = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const langToggle = document.getElementById('langToggle');
+            
+            langToggle.addEventListener('click', function() {
+                isGerman = !isGerman;
+                
+                const germanElements = document.querySelectorAll('.german-text');
+                const englishElements = document.querySelectorAll('.english-text');
+                
+                if (isGerman) {
+                    germanElements.forEach(el => el.style.display = '');
+                    englishElements.forEach(el => el.style.display = 'none');
+                    langToggle.innerHTML = '🇬🇧 English Version';
+                } else {
+                    germanElements.forEach(el => el.style.display = 'none');
+                    englishElements.forEach(el => el.style.display = '');
+                    langToggle.innerHTML = '🇩🇪 Deutsche Version';
+                }
+            });
+            
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.content-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+        
+        // Add hover effects to info items
+        document.querySelectorAll('.info-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.15)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.1)';
+            });
+        });
+        
+        // Smooth scrolling for any internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cfbba5a53dfedc',t:'MTc1NDgzMTQyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

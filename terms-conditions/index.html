@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions - RaveMaster Nature Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section p {
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        
+        .section ul {
+            margin: 15px 0 20px 30px;
+        }
+        
+        .section li {
+            margin-bottom: 12px;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .highlight-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: #2c3e50;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(254, 202, 87, 0.3);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            color: #7f8c8d;
+        }
+        
+        .copyright-symbol {
+            font-size: 1.5rem;
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .content {
+                padding: 30px 25px;
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .section h3 {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Disable text selection and copying */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Disable right-click context menu */
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="no-select" oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="copyright-symbol">©</span>
+                Terms & Conditions
+                <span>⚖️</span>
+            </h1>
+            <p>Important legal information regarding the use of wildlife photography and observations in RaveMaster Nature Gallery</p>
+        </div>
+        
+        <div class="content">
+            <div class="highlight-box">
+                <h3>🚫 IMPORTANT NOTICE</h3>
+                <p><strong>All images and content in this wildlife gallery are strictly protected by copyright law. Unauthorized use, copying, or distribution is prohibited and may result in legal action.</strong></p>
+            </div>
+            
+            <div class="section">
+                <h2>📸 Image Copyright & Ownership</h2>
+                <p>All photographs, images, and visual content displayed in this wildlife observation gallery are protected by international copyright laws and remain the exclusive property of their respective photographers and contributors.</p>
+                
+                <h3>🔒 Rights Reserved</h3>
+                <ul>
+                    <li>All images retain their original copyright protection</li>
+                    <li>Photographers maintain full ownership of their work</li>
+                    <li>Images are licensed through iNaturalist platform terms</li>
+                    <li>No rights are transferred to viewers or visitors</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>❌ Strictly Prohibited Activities</h2>
+                
+                <h3>🚫 No Copying or Downloading</h3>
+                <ul>
+                    <li>Screenshots, screen recordings, or any form of image capture</li>
+                    <li>Right-clicking and "Save Image As" functionality</li>
+                    <li>Using browser developer tools to access image URLs</li>
+                    <li>Automated scraping or bulk downloading</li>
+                </ul>
+                
+                <h3>🚫 No Redistribution</h3>
+                <ul>
+                    <li>Sharing images on social media platforms</li>
+                    <li>Posting images on websites, blogs, or forums</li>
+                    <li>Including images in presentations or publications</li>
+                    <li>Sending images via email or messaging apps</li>
+                </ul>
+                
+                <h3>🚫 No Commercial Use</h3>
+                <ul>
+                    <li>Using images for business or promotional purposes</li>
+                    <li>Selling or licensing images to third parties</li>
+                    <li>Including images in commercial products or services</li>
+                    <li>Using images for advertising or marketing materials</li>
+                </ul>
+                
+                <h3>🚫 No Modifications</h3>
+                <ul>
+                    <li>Editing, cropping, or altering images in any way</li>
+                    <li>Adding text, watermarks, or overlays</li>
+                    <li>Creating derivative works or adaptations</li>
+                    <li>Using images as part of larger compositions</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h3>✅ Permitted Uses</h3>
+                <p><strong>Personal Viewing:</strong> You may view images for personal, educational, and non-commercial purposes only.</p>
+                <p><strong>Scientific Discussion:</strong> Images may be referenced in scientific or educational contexts with proper attribution to the original photographer and iNaturalist platform.</p>
+            </div>
+            
+            <div class="section">
+                <h2>📋 Permission & Licensing</h2>
+                
+                <h3>🤝 How to Obtain Permission</h3>
+                <p>If you wish to use any images beyond personal viewing, you must:</p>
+                <ul>
+                    <li>Contact the original photographer directly through their iNaturalist profile</li>
+                    <li>Clearly explain your intended use and purpose</li>
+                    <li>Obtain explicit written permission before any use</li>
+                    <li>Comply with any specific licensing terms provided by the photographer</li>
+                    <li>Provide proper attribution as specified by the photographer</li>
+                </ul>
+                
+                <h3>📄 iNaturalist Licensing</h3>
+                <p>Many images on iNaturalist are available under Creative Commons licenses. However, this gallery may include images with more restrictive licensing. Always check the original observation page for specific licensing information.</p>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ Legal Consequences Under Philippine Law</h3>
+                <p><strong>Copyright infringement is a serious criminal and civil offense in the Philippines.</strong> Under RA 8293, violations may result in:</p>
+                
+                <h4>🏛️ Criminal Penalties:</h4>
+                <ul>
+                    <li><strong>Imprisonment:</strong> 1 to 3 years for first offense</li>
+                    <li><strong>Fine:</strong> ₱50,000 to ₱150,000 for first offense</li>
+                    <li><strong>Repeat offenses:</strong> Maximum penalties of 6 years imprisonment and ₱500,000 fine</li>
+                </ul>
+                
+                <h4>⚖️ Civil Remedies:</h4>
+                <ul>
+                    <li>Injunctive relief and cease and desist orders</li>
+                    <li>Actual damages and lost profits</li>
+                    <li>Statutory damages up to ₱200,000 per work infringed</li>
+                    <li>Attorney's fees and litigation costs</li>
+                    <li>Destruction of infringing materials</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🛡️ Enforcement & Monitoring</h2>
+                <p>We actively monitor for unauthorized use of images through:</p>
+                <ul>
+                    <li>Reverse image search technology</li>
+                    <li>Digital watermarking and tracking</li>
+                    <li>Community reporting systems</li>
+                    <li>Legal monitoring services</li>
+                </ul>
+                
+                <h3>📞 Report Copyright Infringement in the Philippines</h3>
+                <p>Copyright violations can be reported to:</p>
+                <ul>
+                    <li><strong>Intellectual Property Office of the Philippines (IPOPHL)</strong> - Main enforcement agency</li>
+                    <li><strong>National Bureau of Investigation (NBI)</strong> - Cybercrime Division</li>
+                    <li><strong>Philippine National Police (PNP)</strong> - Anti-Cybercrime Group</li>
+                    <li><strong>Department of Justice (DOJ)</strong> - Office of Cybercrime</li>
+                </ul>
+                
+                <h3>🏢 IPOPHL Contact Information</h3>
+                <ul>
+                    <li><strong>Address:</strong> 28 Upper McKinley Road, McKinley Hill Town Center, Taguig City</li>
+                    <li><strong>Hotline:</strong> (02) 8238-6300</li>
+                    <li><strong>Email:</strong> mail@ipophil.gov.ph</li>
+                    <li><strong>Website:</strong> www.ipophil.gov.ph</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🇵🇭 Philippine Copyright Law</h2>
+                <p>These terms are enforced under Philippine copyright law and international treaties including:</p>
+                <ul>
+                    <li><strong>Republic Act No. 8293</strong> - Intellectual Property Code of the Philippines</li>
+                    <li><strong>Republic Act No. 10372</strong> - Anti-Photo and Video Voyeurism Act (for privacy protection)</li>
+                    <li><strong>Berne Convention</strong> - Philippines is a signatory member</li>
+                    <li><strong>WIPO Copyright Treaty</strong> - Ratified by the Philippines</li>
+                    <li><strong>Universal Copyright Convention</strong> - Philippine adherence</li>
+                </ul>
+                
+                <h3>⚖️ Philippine Legal Framework</h3>
+                <p>Under Philippine law, copyright protection is automatic upon creation of the work. Photographers' rights include:</p>
+                <ul>
+                    <li>Exclusive right to reproduce the work</li>
+                    <li>Right to distribute copies to the public</li>
+                    <li>Right to display the work publicly</li>
+                    <li>Right to create derivative works</li>
+                    <li>Moral rights that cannot be transferred</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>📝 Agreement & Acceptance</h2>
+                <p>By viewing this gallery and its contents, you automatically agree to:</p>
+                <ul>
+                    <li>Respect all copyright and intellectual property rights</li>
+                    <li>Comply with all terms and restrictions outlined above</li>
+                    <li>Accept legal responsibility for any violations</li>
+                    <li>Acknowledge that violations may result in legal action</li>
+                    <li>Submit to the jurisdiction of Philippine courts for any disputes</li>
+                    <li>Comply with Philippine intellectual property laws and regulations</li>
+                </ul>
+                
+                <h3>⚖️ Governing Law & Jurisdiction</h3>
+                <p>These terms and conditions are governed by the laws of the Republic of the Philippines. Any legal disputes arising from the use of this gallery shall be resolved exclusively in the appropriate courts of the Philippines, specifically:</p>
+                <ul>
+                    <li>Regional Trial Courts for civil cases</li>
+                    <li>Metropolitan Trial Courts for criminal cases</li>
+                    <li>Court of Appeals for appellate matters</li>
+                    <li>Supreme Court of the Philippines as final arbiter</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h3>📧 Contact Information</h3>
+                <p>For questions about these terms, permission requests, or to report copyright violations:</p>
+                <ul>
+                    <li>Visit the original observation on iNaturalist.org</li>
+                    <li>Contact photographers through their iNaturalist profiles</li>
+                    <li>Use iNaturalist's built-in messaging system</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🔄 Updates & Changes</h2>
+                <p>These terms may be updated periodically to reflect changes in copyright law or platform policies. Continued use of the gallery constitutes acceptance of any updated terms.</p>
+                <p><strong>Last Updated:</strong> December 2024</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>© 2024 RaveMaster Nature Gallery. All rights reserved.</strong></p>
+            <p>This page and its contents are protected by copyright law.</p>
+            <a href="/index.html" class="back-btn">← Back to Gallery</a>
+        </div>
+    </div>
+    
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable common keyboard shortcuts for copying
+        document.addEventListener('keydown', function(e) {
+            // Disable Ctrl+A (Select All)
+            if (e.ctrlKey && e.keyCode === 65) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+C (Copy)
+            if (e.ctrlKey && e.keyCode === 67) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+V (Paste)
+            if (e.ctrlKey && e.keyCode === 86) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+X (Cut)
+            if (e.ctrlKey && e.keyCode === 88) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+S (Save)
+            if (e.ctrlKey && e.keyCode === 83) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable F12 (Developer Tools)
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+Shift+I (Developer Tools)
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Show warning message if someone tries to print
+        window.addEventListener('beforeprint', function(e) {
+            alert('Printing is not allowed. All content is protected by copyright.');
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable print using Ctrl+P
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.keyCode === 80) {
+                alert('Printing is not allowed. All content is protected by copyright.');
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96cef8c543fe0990',t:'MTc1NDgyMzQ0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
